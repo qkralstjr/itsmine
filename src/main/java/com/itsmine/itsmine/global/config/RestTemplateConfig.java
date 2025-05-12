@@ -1,4 +1,4 @@
-package com.itsmine.itsmine.config;
+package com.itsmine.itsmine.global.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,19 +18,24 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 public class RestTemplateConfig {
 
     @Bean
-    public DefaultUriBuilderFactory uriBuilderFactory() {
-        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory();
-        factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
-        return factory;
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        Jaxb2RootElementHttpMessageConverter xmlConverter = new Jaxb2RootElementHttpMessageConverter();// 알 수 없는 프로퍼티 무시
-        return builder.messageConverters(xmlConverter).build();
-    }
+//    @Bean
+//    public DefaultUriBuilderFactory uriBuilderFactory() {
+//        DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory();
+//        factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
+//        return factory;
+//    }
+//
+//    @Bean
+//    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+//        Jaxb2RootElementHttpMessageConverter xmlConverter = new Jaxb2RootElementHttpMessageConverter();// 알 수 없는 프로퍼티 무시
+//        return builder.messageConverters(xmlConverter).build();
+//    }
 
 //    @Bean
 //    public RestTemplate restTemplate() {

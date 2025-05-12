@@ -1,4 +1,4 @@
-package com.itsmine.itsmine.config;
+package com.itsmine.itsmine.global.config;
 
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")
+                .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
