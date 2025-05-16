@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.sql.Date;
+import java.time.Instant;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class PublicFoundItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "public_found_item_id")
     private Long pfId;
 
     private String atcId;
@@ -32,10 +34,10 @@ public class PublicFoundItem {
     @Column(name = "img_path")
     private String imgPath;
     @Column(name = "found_at")
-    private Date foundAt;
+    private Instant foundAt;
 
     @Builder
-    public PublicFoundItem(Long pfId, String atcId, String category, String color, String description, String name, String location, String imgPath, Date foundAt){
+    public PublicFoundItem(Long pfId, String atcId, String category, String color, String description, String name, String location, String imgPath, Instant foundAt){
         this.pfId = pfId;
         this.atcId = atcId;
         this.category = category;

@@ -1,25 +1,40 @@
 package com.itsmine.itsmine.global.config;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.nio.charset.Charset;
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @Configuration
 public class RestTemplateConfig {
 
     @Bean
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+
+        RestTemplate restTemplate = new RestTemplate();
+/*
+XMl 메세지컨버터 등록
+        // Jaxb2RootElementHttpMessageConverter "text/xml;charset=UTF-8"
+        Jaxb2RootElementHttpMessageConverter xmlConverter = new Jaxb2RootElementHttpMessageConverter();
+        xmlConverter.setSupportedMediaTypes(Arrays.asList(
+                MediaType.TEXT_XML,
+                MediaType.APPLICATION_XML,
+                new MediaType("text", "xml", StandardCharsets.UTF_8)
+        ));
+        List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
+        converters.add(xmlConverter);
+        List<HttpMessageConverter<?>> converters = new ArrayList<>();
+        converters.add(xmlConverter);
+        converters.addAll(restTemplate.getMessageConverters());
+        restTemplate.setMessageConverters(converters);*/
+        return restTemplate;
     }
 
 //    @Bean

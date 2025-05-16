@@ -20,7 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import com.itsmine.itsmine.global.config.RestTemplateConfig;
 import org.springframework.web.client.RestTemplate;
+
 
 @Component
 @RequiredArgsConstructor
