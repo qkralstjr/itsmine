@@ -37,8 +37,7 @@ public class PublicFoundItem {
     private Instant foundAt;
 
     @Builder
-    public PublicFoundItem(Long pfId, String atcId, String category, String color, String description, String name, String location, String imgPath, Instant foundAt){
-        this.pfId = pfId;
+    public PublicFoundItem(String atcId, String category, String color, String description, String name, String location, String imgPath, Instant foundAt){
         this.atcId = atcId;
         this.category = category;
         this.color = color;

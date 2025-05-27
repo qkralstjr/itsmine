@@ -3,10 +3,13 @@ package com.itsmine.itsmine.auth.controller;
 
 import com.itsmine.itsmine.auth.dto.CompleteSignupRequest;
 import com.itsmine.itsmine.auth.dto.UserSessionDto;
+import com.itsmine.itsmine.auth.exception.AuthErrorCode;
+import com.itsmine.itsmine.auth.exception.AuthException;
 import com.itsmine.itsmine.auth.service.AuthService;
 import com.itsmine.itsmine.auth.service.OAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.apache.bcel.classfile.Code;
 import org.slf4j.Logger;
@@ -32,8 +35,7 @@ public class AuthController {
 
     private final AuthService authService;
 //    private final HttpSession session;               // 전역변수로 선언하면 여러 스레드가 session 객체 공유
-
-    // 카카오 로그인
+    // 카카오 콜백
     @GetMapping("/kakao/callback")
     public ResponseEntity<?> kakaoCallback(@RequestParam("code")String authorizationCode,
             HttpServletRequest request) {
@@ -53,9 +55,12 @@ public class AuthController {
     // 소셜 로그인 회원가입
     @PostMapping("/social/signup")
     public ResponseEntity<?> completeSocialSignup(@RequestBody CompleteSignupRequest completeSignupRequest, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if(session == null || session.getAttribute("user") == null){
+            throw new AuthException(AuthErrorCode.INVALID_AUTH_FLOW);
+        }
 
         UserSessionDto sessionUser = authService.registerNewSocialSignup(completeSignupRequest);
-        HttpSession session = request.getSession();
         session.setAttribute("user", sessionUser);
         return ResponseEntity.ok(sessionUser);
     }

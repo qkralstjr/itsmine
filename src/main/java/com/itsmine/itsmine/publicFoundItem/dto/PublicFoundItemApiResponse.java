@@ -1,7 +1,9 @@
 package com.itsmine.itsmine.publicFoundItem.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -89,9 +91,10 @@ public class PublicFoundItemApiResponse  {
 }
 */
 
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @Setter
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class PublicFoundItemApiResponse {
 
     private Header header;
@@ -121,6 +124,7 @@ public class PublicFoundItemApiResponse {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class ItemsWrapper {
             @JsonProperty("item")
+            @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)     // item이 하나 일땐 배열이 아닌 객체로 인식해서 오류 남 ==> 코드 추가
             private List<Item> item;
         }
     }

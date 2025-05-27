@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itsmine.itsmine.publicFoundItem.dto.PublicFoundItemApiResponse;
+import com.itsmine.itsmine.publicFoundItem.dto.PublicFoundItemApiWrapper;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.List;
@@ -57,7 +58,7 @@ public class PublicFoundItemApiClient {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+            HttpEntity<?> requestEntity = new HttpEntity<>(headers);
 
             ResponseEntity<String> responseEntity = restTemplate.exchange(
                     uri,
@@ -66,9 +67,12 @@ public class PublicFoundItemApiClient {
                     String.class
             );
             String rawJson = responseEntity.getBody();
-            log.info("공공 API 응답(rawJson_: {}", rawJson);
+//            log.info("공공 API 응답(rawJson_: {}", rawJson);
 
-            return objectMapper.readValue(rawJson, PublicFoundItemApiResponse.class);
+
+            PublicFoundItemApiWrapper wrapper = objectMapper.readValue(rawJson, PublicFoundItemApiWrapper.class);
+
+            return wrapper.getResponse();
 
         } catch (HttpClientErrorException e) {
             log.error("4xx 클라이언트 오류 발생: status={}, body={}", e.getStatusCode(),

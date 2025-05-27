@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>카카오 로그인 테스트</title>
+</head>
+<body>
+<h2>🔐 카카오 로그인 테스트</h2>
+<button onclick="redirectToKakao()">카카오로 로그인</button>
+
+<script>
+  function redirectToKakao() {
+    const REST_API_KEY = '3344b0fe701b9f85c740d61b94fd5881'; // 카카오 개발자 콘솔에서 발급
+    const REDIRECT_URI = 'http://localhost:8080/api/auth/kakao/callback'; // 백엔드 인가코드 받을 URI
+    const kakaoAuthUrl = 'https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=3344b0fe701b9f85c740d61b94fd5881&redirect_uri=http://localhost:8080/api/auth/kakao/callback';
+
+    window.location.href = kakaoAuthUrl;
+  }
+</script>
+</body>
+</html>
