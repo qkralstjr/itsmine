@@ -47,7 +47,7 @@ public class PublicFoundItemApiClient {
     @Value("${api.lostFoundService.key}")
     private String serviceKey;
 
-    public PublicFoundItemApiResponse requestFoundItems(int pageNo, int pageSize) {
+    public ResponseEntity<String> requestFoundItemsRaw(int pageNo, int pageSize) {
 
         try {
             URI uri = UriComponentsBuilder.fromUriString(baseUrl)
@@ -57,43 +57,68 @@ public class PublicFoundItemApiClient {
                     .build(true).toUri();
 
             HttpHeaders headers = new HttpHeaders();
-            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
             HttpEntity<?> requestEntity = new HttpEntity<>(headers);
 
-            ResponseEntity<String> responseEntity = restTemplate.exchange(
+            return restTemplate.exchange(
                     uri,
                     HttpMethod.GET,
                     requestEntity,
                     String.class
             );
-            String rawJson = responseEntity.getBody();
-//            log.info("공공 API 응답(rawJson_: {}", rawJson);
 
-
-            PublicFoundItemApiWrapper wrapper = objectMapper.readValue(rawJson, PublicFoundItemApiWrapper.class);
-
-            return wrapper.getResponse();
-
-        } catch (HttpClientErrorException e) {
-            log.error("4xx 클라이언트 오류 발생: status={}, body={}", e.getStatusCode(),
-                    e.getResponseBodyAsString());
-            throw new RuntimeException("공공 API 요청 실패: 잘못된 요청입니다.", e);
-
-        } catch (HttpServerErrorException e) {
-            log.error("5xx 서버 오류 발생: status={}, body={}", e.getStatusCode(),
-                    e.getResponseBodyAsString());
-            throw new RuntimeException("공공 API 요청 실패: 서버 오류입니다.", e);
-
-        } catch (ResourceAccessException e) {
-            log.error("네트워크 연결 실패 또는 타임아웃: {}", e.getMessage());
-            throw new RuntimeException("공공 API 네트워크 오류", e);
-
-        } catch (RestClientException e) {
-            log.error("RestTemplate 오류: {}", e.getMessage());
-            throw new RuntimeException("공공 API 호출 실패", e);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            log.error("[API 요청 실패] page = {} - {}", pageNo, e.getMessage(), e);
+            throw new RuntimeException("공공 API 요청 실패", e);
         }
     }
 
+    public PublicFoundItemApiResponse parseJsonResponse(String content) {
+        if (content == null || content.trim().isEmpty()) {
+            log.error("[JSON 파싱 실패] 응답 내용이 비어있습니다.");
+            throw new RuntimeException("API 응답이 비어있습니다.");
+        }
+        
+        try {
+            PublicFoundItemApiWrapper wrapper = objectMapper.readValue(content, PublicFoundItemApiWrapper.class);
+            if (wrapper == null || wrapper.getResponse() == null) {
+                log.error("[JSON 파싱 실패] 응답이 null입니다.");
+                throw new RuntimeException("API 응답이 null입니다.");
+            }
+            return wrapper.getResponse();
+        } catch (JsonProcessingException e) {
+            log.error("[JSON 파싱 실패] 응답 내용: {}, 에러: {}", content, e.getMessage(), e);
+            throw new RuntimeException("JSON 파싱 실패: " + e.getMessage(), e);
+        }
+    }
+
+    public PublicFoundItemApiResponse parseXmlResponse(String content) {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(PublicFoundItemApiResponse.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            StringReader reader = new StringReader(content);
+            return (PublicFoundItemApiResponse) unmarshaller.unmarshal(reader);
+        } catch (JAXBException e) {
+            log.error("[XML 파싱 실패] {}", e.getMessage(), e);
+            throw new RuntimeException("XML 파싱 실패", e);
+        }
+    }
+
+    public int getTotalPage(int pageSize){
+        log.info("Response : {}", requestFoundItemsRaw(1,1).getBody());
+        String body = requestFoundItemsRaw(1,1).getBody();
+        PublicFoundItemApiResponse parsed = body != null && body.trim().startsWith("<")
+                ? parseXmlResponse(body)
+                : parseJsonResponse(body);
+        int totalCount = parsed.getBody().getTotalCount();
+        return (int) Math.ceil(totalCount / (double) pageSize);
+    }
+
+    public List<PublicFoundItemApiResponse.Item> fetchPage(int page){
+        String body = requestFoundItemsRaw(page,1000).getBody();
+        PublicFoundItemApiResponse parsed = body != null && body.trim().startsWith("<")
+                ? parseXmlResponse(body)
+                : parseJsonResponse(body);
+        return parsed.getBody().getItems().getItem();
+    }
 }

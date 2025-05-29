@@ -33,7 +33,8 @@ public class PublicFoundItem {
     private String location;
     @Column(name = "img_path")
     private String imgPath;
-    @Column(name = "found_at")
+    @Column(name = "found_at",
+            columnDefinition = "DATETIME(6)")
     private Instant foundAt;
 
     @Builder
@@ -46,5 +47,15 @@ public class PublicFoundItem {
         this.location = location;
         this.imgPath = imgPath;
         this.foundAt = foundAt;
+    }
+
+    public void updateFrom(PublicFoundItem other) {
+        this.category = other.getCategory();
+        this.color = other.getColor();
+        this.description = other.getDescription();
+        this.name = other.getName();
+        this.location = other.getLocation();
+        this.imgPath = other.getImgPath();
+        this.foundAt = other.getFoundAt();
     }
 }
